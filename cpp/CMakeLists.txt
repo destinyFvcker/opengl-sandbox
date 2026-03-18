@@ -12,6 +12,7 @@ target_compile_definitions(opengl-sandbox PRIVATE GL_SILENCE_DEPRECATION)
 
 target_include_directories(opengl-sandbox PRIVATE
     /Users/defv/dev/libs/glfw-3.4/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
 target_link_directories(opengl-sandbox PRIVATE
