@@ -4,6 +4,10 @@
 // clang-format on
 #include <iostream>
 
+void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
+  glViewport(0, 0, width, height);
+}
+
 int main() {
   if (!glfwInit()) {
     std::cerr << "Failed to initialize GLFW" << std::endl;
@@ -36,12 +40,14 @@ int main() {
     return -1;
   }
 
-  while (!glfwWindowShouldClose(window)) {
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+  glViewport(0, 0, 800, 600);
 
+  glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
+  // 每次循环迭代开始时检查GLFW是否被指示关闭。
+  while (!glfwWindowShouldClose(window)) {
     glfwSwapBuffers(window);
-    glfwPollEvents();
+    glfwPollEvents(); // 检查是否有任何事件被触发（例如键盘输入或鼠标移动事件），更新窗口状态，并调用相应的函数（就是通过回调方法来注册这些函数）
   }
 
   glfwTerminate();
