@@ -1,0 +1,2 @@
+CompileFlags:
+  Add: [-DGL_SILENCE_DEPRECATION]
