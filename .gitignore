@@ -1,4 +1,5 @@
 /target
 /build
 /cpp/build
+/cpp/.cache
 /tmp
