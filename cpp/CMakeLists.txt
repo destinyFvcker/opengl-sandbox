@@ -10,7 +10,7 @@ file(GLOB EXAMPLE_SOURCES "src/bin/*.cpp")
 
 foreach(SOURCE ${EXAMPLE_SOURCES})
     get_filename_component(TARGET_NAME ${SOURCE} NAME_WE)
-    add_executable(${TARGET_NAME} ${SOURCE} src/glad.c)
+    add_executable(${TARGET_NAME} ${SOURCE} src/glad.c src/utils.cpp)
     target_compile_definitions(${TARGET_NAME} PRIVATE GL_SILENCE_DEPRECATION)
     target_include_directories(${TARGET_NAME} PRIVATE
         /Users/defv/dev/libs/glfw-3.4/include
