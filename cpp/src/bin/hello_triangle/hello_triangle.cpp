@@ -82,6 +82,7 @@ int main() {
   char infoLog[512];
   glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &compileSuccess);
   if (!compileSuccess) {
+    // 这里的第三个参数是一个指向实际写入了多少个字符的number的指针：GLsizei*
     glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
     std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n"
               << infoLog << std::endl;
@@ -91,21 +92,21 @@ int main() {
   std::string frag_shader = readFile("./shader/hello_triangle.glsl.frag");
   const char *frag_shader_src = frag_shader.c_str();
 
-  unsigned int fragmentSahder;
-  fragmentSahder = glCreateShader(GL_FRAGMENT_SHADER);
+  unsigned int fragmentShader;
+  fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 
-  glShaderSource(fragmentSahder, 1, &frag_shader_src, nullptr);
-  glCompileShader(fragmentSahder);
+  glShaderSource(fragmentShader, 1, &frag_shader_src, nullptr);
+  glCompileShader(fragmentShader);
 
   // 现在这两个着色器都已经编译完成，剩下的任务就是将这两个着色器对象链接成一个可以用于渲染的程序。
   unsigned int shaderProgram;
   shaderProgram = glCreateProgram();
   glAttachShader(shaderProgram, vertexShader);
-  glAttachShader(shaderProgram, fragmentSahder);
+  glAttachShader(shaderProgram, fragmentShader);
   glLinkProgram(shaderProgram);
 
   glDeleteShader(vertexShader);
-  glDeleteShader(fragmentSahder);
+  glDeleteShader(fragmentShader);
 
   // 告诉OpenGL如何解释顶点数据
   // @1.
