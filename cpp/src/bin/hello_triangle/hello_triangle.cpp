@@ -130,7 +130,7 @@ int main() {
   // 最后一个参数的类型是void*，因此需要那个奇怪的强制转换。这是指顶点属性数据在缓冲区中的起始偏移量。
   // 由于位置数据位于数据数组的起始位置，因此该值就是0。
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
-  // 启用顶点属性，将顶点属性的位置作为其参数，它们默认都是禁用的
+  // 启用顶点属性，将顶点属性的位置作为其参数，它们默认都是禁用的，这里的参数的含义和上面顶点属性的位置的语义保持一致
   glEnableVertexAttribArray(0);
 
   glBindVertexArray(0); // ⚠️ ← VAO 停止录制（解绑）
