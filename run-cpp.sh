@@ -15,9 +15,30 @@ shift
 if [[ "$TARGET" = /* ]]; then
   EXE_PATH="$TARGET"
 elif [[ "$TARGET" == */* ]]; then
-  EXE_PATH="$PROJECT_ROOT/$TARGET"
+  if [ -f "$PROJECT_ROOT/$TARGET" ]; then
+    EXE_PATH="$PROJECT_ROOT/$TARGET"
+  else
+    EXE_PATH="$PROJECT_ROOT/cpp/build/$TARGET"
+  fi
 else
-  EXE_PATH="$PROJECT_ROOT/cpp/build/$TARGET"
+  MATCHES=()
+  while IFS= read -r path; do
+    MATCHES+=("$path")
+  done < <(find "$PROJECT_ROOT/cpp/build" -type f -name "$TARGET" -perm -111 2>/dev/null)
+
+  if [ "${#MATCHES[@]}" -eq 1 ]; then
+    EXE_PATH="${MATCHES[0]}"
+  elif [ "${#MATCHES[@]}" -gt 1 ]; then
+    echo "Multiple executables named '$TARGET' found:" >&2
+    for path in "${MATCHES[@]}"; do
+      rel="${path#$PROJECT_ROOT/}"
+      echo "  - $rel" >&2
+    done
+    echo "Please run with a relative path, e.g. ./run-cpp.sh cpp/build/<subdir>/$TARGET" >&2
+    exit 1
+  else
+    EXE_PATH="$PROJECT_ROOT/cpp/build/$TARGET"
+  fi
 fi
 
 if [ ! -f "$EXE_PATH" ]; then
