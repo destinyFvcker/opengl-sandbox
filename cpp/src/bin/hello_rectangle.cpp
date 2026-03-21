@@ -24,7 +24,7 @@ int main() {
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // macOS 必须
 
   GLFWwindow *window =
-      glfwCreateWindow(800, 600, "Hello Triangle", nullptr, nullptr);
+      glfwCreateWindow(800, 600, "Hello Rectangle", nullptr, nullptr);
   if (!window) {
     std::cerr << "Failed to create GLFW window" << std::endl;
     glfwTerminate();
@@ -45,22 +45,40 @@ int main() {
   glViewport(0, 0, fbWidth, fbHeight);
   glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
+  // enable Wireframe mode
+  glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
   unsigned int VAO;
   glGenVertexArrays(1, &VAO);
   glBindVertexArray(VAO); // ⚠️ ← VAO 开始"录制"
 
-  float vertices[] = {-0.5f, -0.5f, 0.0f, 0.5f, -0.5f, 0.0f, 0.0f, 0.5f, 0.0f};
+  float vertices[] = {
+      0.5f,  0.5f,  0.0f, // 右上
+      0.5f,  -0.5f, 0.0f, // 右下
+      -0.5f, -0.5f, 0.0f, // 左下
+      -0.5f, 0.5f,  0.0f, // 左上
+  };
+
+  unsigned int indices[] = {
+      0, 1, 3, // 第一个三角形
+      1, 2, 3, // 第二个三角形
+  };
 
   unsigned int VBO;
   glGenBuffers(1, &VBO);
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
+  unsigned int EBO;
+  glGenBuffers(1, &EBO);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
   // 这个函数专门用于将用户定义的数据复制到当前绑定缓冲区
   // - 第一个参数：缓冲区类型
   // - 第二个参数：要传递给缓冲区的数据大小（字节）
   // - 第三个参数：想要发送的实际数据
   // - 第四个参数：希望显卡如何管理给定的数据
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices,
+               GL_STATIC_DRAW);
 
   // readFile 返回 std::string，避免了 C 风格 malloc/free 的手动内存管理。
   std::string vert_shader = readFile("./shader/hello_triangle.glsl.vert");
@@ -137,15 +155,7 @@ int main() {
   while (!glfwWindowShouldClose(window)) {
     // render
     // ------
-
-    // 设置清屏颜色（RGBA）：这里是偏青色背景，alpha=1.0 表示完全不透明
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-    // 清除颜色缓冲区，用上面设置的颜色填充整个屏幕
-    //
-    // 假如不这样做:
-    // 1. 上一帧残留会留在屏幕上，造成拖影 / 脏画面。
-    // 2. 你这帧没覆盖到的区域会显示旧内容，而不是你期望的背景色。
-    // 3. 每帧的渲染起点不一致，画面结果会不稳定、难调试。
     glClear(GL_COLOR_BUFFER_BIT);
 
     // draw our first triangle
@@ -153,7 +163,12 @@ int main() {
     glBindVertexArray(
         VAO); // seeing as we only have a single VAO there's no need to bind it
               // every time, but we'll do so to keep things a bit more organized
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    // 1. 指定我们想要绘制的模式
+    // 2. 想要绘制的元素数量
+    // 3. 索引的类型
+    // 4. 指定EBO之中的偏移量
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    // glDrawArrays(GL_TRIANGLES, 0, 3);
     // glBindVertexArray(0); // no need to unbind it every time
 
     // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved
@@ -164,7 +179,7 @@ int main() {
   }
 
   glDeleteShader(vertexShader);
-  glDeleteBuffers(1, &VBO);
+  glDeleteBuffers(1, &EBO);
   glfwDestroyWindow(window);
   glfwTerminate();
 
