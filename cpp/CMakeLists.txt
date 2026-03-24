@@ -24,7 +24,7 @@ foreach(SOURCE ${EXAMPLE_SOURCES})
         string(REPLACE "/" "_" TARGET_ID "${SOURCE_SUBDIR}_${TARGET_NAME}")
     endif()
 
-    add_executable(${TARGET_ID} ${SOURCE} src/glad.c src/utils.cpp)
+    add_executable(${TARGET_ID} ${SOURCE} src/glad.c src/utils.cpp src/stb_image.cpp)
     set_target_properties(${TARGET_ID} PROPERTIES OUTPUT_NAME "${TARGET_NAME}")
 
     if(SOURCE_SUBDIR STREQUAL "." OR SOURCE_SUBDIR STREQUAL "")
